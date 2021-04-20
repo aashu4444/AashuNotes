@@ -1,0 +1,301 @@
+{% load mytags %}
+
+<!-- Start - Code To Add Card On Whole Website   -->
+<div class="card my_card mx-4 my-2" id="{{forloop.counter}}" style="width: 336px;">
+    <div class="card-body">
+
+        <!-- Start - This Code Will Run When This Code Is Running On The Search Page.   -->
+        {% if search_page %}
+            {% autoescape off %}
+                <h5 class="card-title">{% if i.password != "" %} {{i.note_title_when_locked}} {% else %} {{i.note_title|highlight:searched}} {% endif %}</h5>
+
+                <p class="card-text">
+                    {% if i.password != "" %}
+                        {{i.note_when_locked}}
+                    {% else %}
+                        {{i.note|slice:"0:150"|highlight:searched}}
+                        {% if i.note|length > 150 %}....{% endif %}
+                    {% endif %}
+                </p>
+            {% endautoescape %}
+        <!-- End - This Code Will Run When This Code Is Running On The Search Page.   -->
+
+
+        <!-- Start - This Code Will Run When This Code Is _____Not_____ Running On The Search Page.   -->
+        {% else %}
+
+
+        <h5 class="card-title">{% if i.password != "" %} {{i.note_title_when_locked|slice:":28"}}{% if i.note_title_when_locked|length > 20 %}....{% endif %} {% else %} <span class="beforeText"></span><span class="highlight bg-warning text-light"></span><span class="afterText"></span>{{i.note_title|slice:":28"}}{% if i.note_title|length > 20 %}....{% endif %} {% endif %}</h5>
+
+
+        <p class="card-text">
+            {% if i.password != "" %}
+                {{i.note_when_locked|slice:"0:150"}}
+                {% if i.note_when_locked|length > 150 %}....{% endif %}
+            {% else %}
+            {{i.note|slice:"0:150"}}
+            <!-- Start - If The Length Of Note Is Greater That 150 Then Add '....' .   -->
+            {% if i.note|length > 150 %}....{% endif %}
+            <!-- End - If The Length Of Note Is Greater That 150 Then Add '....' .   -->
+            {% endif %}
+        </p>
+        {% endif %}
+
+
+        <div class="cardFooter" id="cardFooter{{forloop.counter}}">
+            <!-- Button trigger modal -->
+            <button type="button" class="btn btn-primary me-1" data-bs-toggle="modal"
+                    data-bs-target="#exampleModal{{forloop.counter}}">
+                <i class="fa fa-book-open me-2"></i>Read Full Note
+            </button>
+
+
+            <button data-bs-template='<div class="popover po" role="tooltip"><div class="popover-arrow"></div><h3 class="popover-header"></h3><div class="popover-body"></div></div>' type="button" data-bs-html="true" class="btn btn-danger items-pop" data-bs-toggle="popover" title="Note Editing Options" data-bs-content='<button title="Delete This Note" {% if i.password != "" %}data-bs-toggle="modal" data-bs-target="#exampleModalDelete{{forloop.counter}}" {% else %} onclick="sure_delete()" id="{{i.id}}" {% endif %}class="btn btn-danger mx-1 delete_btn_popover" role="button"><i class="fa fa-trash-alt"></i></button> <a {% if i.password == "" %}href="{% if card_backslash %}\{% endif %}edit/{{i.id}}"{% endif %} title="Edit This Note" class="btn btn-primary" {% if i.password != "" %}data-bs-toggle="modal" data-bs-target="#exampleModalEdit{{forloop.counter}}"{% endif %} role="button"><i class="fa fa-edit"></i></a><button type="button" class="btn btn-success ms-2" data-bs-toggle="modal" data-bs-target="#addLabelModal{{forloop.counter}}"><i class="fa fa-plus"></i></button><button type="button" class="btn btn-success ms-2" data-bs-toggle="modal" data-bs-target="#removeFromLabel{{forloop.counter}}"><i class="fa fa-minus"></i></button>'>....</button>
+
+            <button title="{% if i.password != '' %}Unlock This Note{% else %}Lock This Note{% endif %}" type="button" class="btn btn-danger ms-1 lock-btn" data-bs-toggle="modal"
+                    data-bs-target="{% if i.password != '' %}#unlockModal{{forloop.counter}}{% else %}#lockModal{{forloop.counter}}{% endif %}">
+                {% if i.password != "" %}
+                    <i class='fa fa-unlock'></i>
+                {% else %}
+                    <i class='fa fa-lock'></i>
+                {% endif %}
+            </button>
+        </div>
+
+        <!-- Start - Remove From Label Modal  -->
+        <div class="modal fade" id="removeFromLabel{{forloop.counter}}" tabindex="-1" aria-labelledby="removeFromLabelLabel{{forloop.counter}}" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="removeFromLabelLabel{{forloop.counter}}">Remove From Label</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form action="{% if card_backslash %}\{% endif %}remove_from_label/{{i.id}}" method='post'>
+                {% csrf_token %}
+                    {% for checks in labels %}
+                        <div class="form-check">
+                            <input name="CheckToRemove{{forloop.counter}}" class="form-check-input" type="checkbox" id="CheckToRemove{{forloop.counter}}">
+                            <input name="CheckToRemoveLabel{{forloop.counter}}" class="form-control" value="{{checks.label}}" readonly>
+                        </div>
+                    {% endfor %}
+                    <div class="modal-footer mt-3">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-success">Remove</button>
+                    </div>
+                </form>
+            </div>
+            </div>
+        </div>
+        </div>
+        <!-- End - Remove From Label Modal  -->
+
+
+        <!-- Modal -->
+        <div class="modal fade" id="exampleModalDelete{{forloop.counter}}" tabindex="-1" aria-labelledby="exampleModalLabelDelete{{forloop.counter}}" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabelDelete{{forloop.counter}}">Delete Note</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        {% include "myapp/enter_password_form.html" with btnText="Delete Note" action="delete/" %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal -->
+        <div class="modal fade" id="exampleModalEdit{{forloop.counter}}" tabindex="-1" aria-labelledby="exampleModalLabelEdit{{forloop.counter}}" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabelEdit{{forloop.counter}}">Edit Note</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        {% include "myapp/enter_password_form.html" with btnText="Edit Note" action="edit/" %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Button trigger modal -->
+        
+        <!-- Button trigger modal -->
+        
+
+        <!-- Modal -->
+        <div class="modal fade" id="addLabelModal{{forloop.counter}}" tabindex="-1" aria-labelledby="addLabelModalLabel{{forloop.counter}}" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addLabelModalLabel{{forloop.counter}}">Add To Label</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form action="
+                {% if labels|length == 0 %}
+                    {% if card_backslash %}\{% endif %}create_label/
+                {% else %}
+                    {% if card_backslash %}\{% endif %}add_to_label/{{i.id}}
+                {% endif %}
+                " method='post'>
+                {% csrf_token %}
+                    {% if labels|length == 0 %}
+                        <p>Sorry No Labels Available Enter Following Details Below 👇 To Create A Label.</p>
+                        <div>
+                            <label class="mb-2" for="label_name">Label Name:</label>
+                            <input name="label_name" type="text" id="label_name" class="form-control" placeholder="Enter Label Name" required>
+                        </div>
+                    {% endif %}
+                    {% for checks in labels %}
+                        <div class="form-check">
+                            <input name="CheckBox{{forloop.counter}}" class="form-check-input" type="checkbox" id="flexCheckChecked{{forloop.counter}}">
+                            <input name="checkLabel{{forloop.counter}}" class="form-control" value="{{checks.label}}" readonly>
+                        </div>
+                    {% endfor %}
+                    <div class="modal-footer mt-3">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-success">
+                            {% if labels|length == 0 %}Create Label <i class="fa fa-plus ms-2"></i> {% else %}Add{% endif %}
+                        </button>
+                    </div>
+                </form>
+            </div>
+            
+            </div>
+        </div>
+        </div>
+
+        <!-- Modal -->
+        <div class="modal fade lock_modal" id="lockModal{{forloop.counter}}" tabindex="-1" aria-labelledby="lockModalLabel{{forloop.counter}}"
+             aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="lockModalLabel{{forloop.counter}}">Lock Selected Note</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form action="{% if card_backslash %}\{% endif %}lock_me_bro/{{i.id}}" method="post">
+                            {% csrf_token %}
+                            <div class="mb-3">
+                                <label for="note_title_when_locked" class="mb-1">Note Title :</label>
+                                <input type="text" id="note_title_when_locked" class="form-control"
+                                       placeholder="Enter Note Title"
+                                       name="note_title_when_locked" value="Lorem ipsum dolor sit amet." required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="note_when_locked" class="mb-1">Note :</label>
+                                <textarea rows="3" id="note_when_locked" class="form-control"
+                                       placeholder="Enter Note"
+                                       name="note_when_locked" required>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent dictum augue et bibendum rutrum. Nunc ut tempus ipsum. Pellentesque a pretium lacus. Nullam eleifend finibus posuere. Nam congue porttitor magna vitae vestibulum. Quisque feugiat ultrices tellus, eget sodales elit iaculis ut. Etiam iaculis ante quis dui faucibus, eget gravida ligula lobortis.</textarea>
+                            </div>
+                            <div class="mb-3">
+                                <label for="lock_password{{forloop.counter}}" class="mb-1">Password* :</label>
+                                <input type="password" id="lock_password{{forloop.counter}}" class="form-control"
+                                       placeholder="Enter Password"
+                                       name="lock_password" required>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close
+                                </button>
+                                <button type="submit" role="button"
+                                   class="btn btn-danger"><i
+                                        class="fa fa-lock me-1"></i>Lock</button>
+                            </div>
+                        </form>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <div class="modal fade" id="unlockModal{{forloop.counter}}" tabindex="-1" aria-labelledby="unlockModalLabel{{forloop.counter}}" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="unlockModalLabel{{forloop.counter}}">Unlock Note</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        {% include "myapp/enter_password_form.html" with action="unlock/" btnText="Unlock Note" %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal -->
+        <div class="modal fade" id="exampleModal{{forloop.counter}}" tabindex="-1"
+             aria-labelledby="exampleModalLabel{{forloop.counter}}"
+             aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        {% autoescape off %}
+                            {% if search_page %}
+                                {% if i.password != "" %}
+                                    <h5 class="modal-title" id="exampleModalLabel{{forloop.counter}}">Locked Note</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                {% else %}
+                                    <h5 class="modal-title" id="exampleModalLabel{{forloop.counter}}">
+                                    {{i.note_title|highlight:searched}}</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                {% endif %}
+
+                            {% else %}
+                                {% if i.password != "" %}
+                                    <h5 class="modal-title" id="exampleModalLabel{{forloop.counter}}">Locked Note</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                {% else %}
+                                    <h5 class="modal-title" id="exampleModalLabel{{forloop.counter}}">{{i.note_title}}</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                {% endif %}
+                            {% endif %}
+                        {% endautoescape %}
+                    </div>
+                    <div class="modal-body">
+                        {% autoescape off %}
+                            {% if search_page %}
+                                {% if i.password != "" %}
+                                    {% include "myapp/enter_password_form.html" with form_backslash=True %}
+                                {% else %}
+                                    <pre style="font-family: sans-serif;">{{i.note|highlight:searched}}</pre>
+                                {% endif %}
+
+                            {% else %}
+                                {% if i.password != "" %}
+                                    {% include "myapp/enter_password_form.html" with form_backslash=False %}
+                                {% else %}
+                                    <pre style="font-family: sans-serif;">{{i.note}}</pre>
+                                {% endif %}
+                            {% endif %}
+                        {% endautoescape %}
+
+                    </div>
+                    {% if i.password == "" %}
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <a href="{% if card_backslash %}\{% endif %}delete/{{i.id}}" title="Delete This Note"
+                           class="btn btn-danger mx-1 delete_btn" role="button"><i class="fa fa-trash-alt"></i></a>
+                        <a href="{% if card_backslash %}\{% endif %}edit/{{i.id}}" title="Edit This Note"
+                           class="btn btn-primary" role="button"><i class="fa fa-edit"></i></a>
+                        <button title="{% if i.password != '' %}Unlock This Note{% else %}Lock This Note{% endif %}" type="button" class="btn btn-danger ms-1 lock-btn" data-bs-toggle="modal"
+                            data-bs-target="{% if i.password != '' %}#unlockModal{{forloop.counter}}{% else %}#lockModal{{forloop.counter}}{% endif %}">
+                        {% if i.password != "" %}
+                            <i class='fa fa-unlock'></i>
+                        {% else %}
+                            <i class='fa fa-lock'></i>
+                        {% endif %}
+                    </button>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- End - Code To Add Card On Whole Website   -->

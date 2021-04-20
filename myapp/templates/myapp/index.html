@@ -1,0 +1,59 @@
+{% extends 'myapp/base.html' %}
+
+
+
+
+
+{% block title %}Home{% endblock title %}
+{% block active %}active{% endblock active %}
+
+{% block body %}
+
+
+<h1></h1>
+
+{% if anonymous %}
+<div class="myToast">
+    <p class="bg-danger text-capitalize text-white rounded-3 w-50 shadow p-3 m-5 fs-5">☹ Sorry, you haven't logged in to our site <a href="#" data-bs-toggle="modal" data-bs-target="#myModal2" class="text-white">Log In</a> To Get Started.</p>
+</div>
+
+
+{% else %}
+
+{% if notes_count|length == 0 %}
+
+<div class="myToast">
+    <p class="bg-danger text-white rounded-3 w-50 shadow p-3 m-5 fs-5">☹ {{ request.user }}, looks like you does not have any note <a href="#" class="text-white" data-bs-toggle="modal" data-bs-target="#myModal1">Click Here</a> To Add A Note.</p>
+</div>
+
+
+{% endif %}
+
+
+<div class="container mt-5 d-flex justify-content-center" style="flex-wrap: wrap;">
+    {% for i in note %}
+        {% if i.author == user %}
+            {% include 'myapp/card.html' %}
+        {% endif %}
+    {% endfor %}
+</div>
+
+
+{% for message in messages %}
+    {% if message.level == 25 %}
+        <script>
+            swal("Success", "{{message}}", "success");
+        </script>
+    {% endif %}
+{% endfor %}
+
+
+
+
+{% endif %}
+
+
+
+
+{% endblock %}
+

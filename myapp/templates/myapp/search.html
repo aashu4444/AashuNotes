@@ -1,0 +1,70 @@
+{% extends 'myapp/base.html' %}
+{% load mytags %}
+
+
+{% block title %}{{searched}}{% endblock %}
+
+
+{% block backslash %}\{% endblock %}
+{% block backslash2 %}\{% endblock %}
+
+{% block css %}
+<style>
+.remove_highlights {
+    background: transparent !important;
+    color: black !important;
+}
+</style>
+{% endblock %}
+
+{% block body %}
+
+<button title='Remove Highlights From All Notes' class="mx-2 my-2 mb-0 cross btn btn-danger remove_the_highlights"><i class="fa fa-times"></i></button>
+
+<div class="myToast" style="display: none;">
+    <p class="bg-danger text-capitalize text-white rounded-3 w-50 shadow p-3 m-5 fs-5 text-capitalize">sorry, no notes found. try a diffrent search to get results.</p>
+</div>
+
+
+<div class="container mt-5 d-flex justify-content-center" style="flex-wrap: wrap;">
+    {% for i in note %}
+        {% if i.password == "" %}
+            {% if searched in i.note_title or searched in i.note %}
+                {% include 'myapp/card.html' with card_backslash=True search_page=True searched=searched %}
+
+                {% elif searched|lower in i.note_title or searched|lower in i.note %}
+                    {% include 'myapp/card.html' with card_backslash=True search_page=True searched=searched|lower %}
+
+                {% elif searched|upper in i.note_title or searched|upper in i.note %}
+                    {% include 'myapp/card.html' with card_backslash=True search_page=True searched=searched|upper %}
+
+                {% elif searched|title in i.note_title or searched|title in i.note %}
+                    {% include 'myapp/card.html' with card_backslash=True search_page=True searched=searched|title %}
+            {% endif %}
+        {% endif %}
+    {% endfor %}
+</div>
+
+
+{% block js %}
+
+<script>
+    $(".cross").click(function(){
+        $(".highlight").addClass("remove_highlights");
+    });
+
+    // document.getElementById("six").innerHTML = document.getElementsByClassName("my_card").length;
+
+    if ( document.getElementsByClassName("my_card").length == 0 ){
+        $(".remove_the_highlights").css("display", "none");
+        $(".myToast").css("display", "block");
+    }
+
+
+    // remove_the_highlights
+</script>
+
+{% endblock %}
+
+
+{% endblock %}

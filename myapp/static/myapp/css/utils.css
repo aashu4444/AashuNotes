@@ -1,0 +1,10 @@
+.m_r-1 { margin-right: 0.5em !important; }
+.m_r-2 { margin-right: 1em !important; }
+.m_r-3 { margin-right: 1.5em !important; }
+.m_r-4 { margin-right: 2em !important; }
+
+@media only screen and (max-width: 768px){
+    .ml-sm-0{
+        margin-left: 0 !important !important !important;
+    }
+}

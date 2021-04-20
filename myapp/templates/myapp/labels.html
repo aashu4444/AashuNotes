@@ -1,0 +1,63 @@
+{% extends "myapp/base.html" %}
+
+{% block title %}Labels{% endblock %}
+{% block activeLabel %}active{% endblock activeLabel %}
+{% load mytags %}
+{% block body %}
+
+
+
+<!-- Button trigger modal -->
+<button type="button" class="btn btn-success ms-2 mt-2" data-bs-toggle="modal" data-bs-target="#exampleModal">
+  Create A Label<i class="fa fa-plus ms-2"></i>
+</button>
+
+<!-- Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Create A Label</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form action="\create_label/" method="post">
+            {% csrf_token %}
+            <div class="mb-3">
+                <label for="label_name" class="mb-2">Label Name: </label>
+                <input class="form-control" type="text" id="label_name" name="label_name" placeholder="Enter Label Name Here">
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="submit" class="btn btn-success">Create Label</button>
+            </div>
+            
+        </form>
+
+        
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<div class="container my-5">
+    <div class="row">
+        {% for label in labels %}
+          {% if label.author == user %}
+            <div class="col">
+                <div class="rounded bg-success p-3 text-white">
+                    <a href="\view_label/{{label.id}}" class="d-inline text-white fs-4 text-decoration-none">{{label.label}} <span>({{label.note_title|loads|length}})</span></a>
+                </div>
+            </div>
+            {% if forloop.counter|divisibleby:"3" and not forloop.last %}
+                </div>
+                <div class="row mt-4">
+            {% endif %}
+          {% endif %}
+        {% endfor %}
+</div>
+
+
+{% endblock %}

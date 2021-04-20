@@ -1,0 +1,418 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-giJF6kkoqNQ00vy+HMDP7azOuL0xtbfIcaT9wjKHr8RbDVddVHyTfAAsrekwKmP1" crossorigin="anonymous">
+    <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css"
+          integrity="sha512-+4zCK9k+qNFUR5X+cKL9EIR+ZOhtIloNl9GIKS57V1MyNsYpYcUrUeQc9vNfzsWfV28IaLL3i96P9sdNyeRssA=="
+          crossorigin="anonymous"/>
+    <link rel="stylesheet" type="text/css" href="{% static 'myapp/css/utils.css' %}"/>
+    <title>{% block title %}{% endblock %} - AashuNotes</title>
+
+
+    <!-- Start - A Block For CSS   -->
+    {% block css %}
+    {% endblock %}
+    <!-- End - A Block For CSS   -->
+</head>
+<body>
+
+
+<!-- Start - Code For Navbar   -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="/">AashuNotes</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
+                aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+
+                <!-- Start - Link To Go On Home Page   -->
+
+                <li class="nav-item">
+
+                    <!-- Start - 'Active' Block For Active The Home Link On The Home Page   -->
+                    <a class="nav-link {% block active %}{% endblock %}" aria-current="page" href="/"><i class="fa fa-home me-2"></i>Home</a>
+                    <!-- End - 'Active' Block For Active The Home Link On The Home Page   -->
+
+                </li>
+
+                <!-- End - Link To Go On Home Page   -->
+
+                <!-- Button trigger modal -->
+                {% if not request.user.is_anonymous %}
+                    <a href="#" class="nav-link" data-bs-toggle="modal" data-bs-target="#myModal1">
+                        Add A Note <i class="ms-1 fa fa-plus"></i>
+                    </a>
+
+                    <a href="{% if card_backslash %}\{% endif %}labels" class="nav-link {% block activeLabel %}{% endblock activeLabel %}">
+                        Labels
+                    </a>
+
+                {% endif %}
+                
+
+                <!-- Modal -->
+                <div class="modal fade" id="myModal1" tabindex="-1" aria-labelledby="myModalLabel1"
+                     aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="myModalLabel1">Add A Note</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                        aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <form action="\add_note/" method="post">
+                                    {% csrf_token %}
+                                    <div class="mb-3">
+                                        <label for="exampleFormControlInput1" class="form-label">Note Title</label>
+                                        <input type="text" class="form-control note-title" name="note_title"
+                                               id="exampleFormControlInput1" placeholder="Enter Note Title" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="exampleFormControlTextarea1" class="form-label">Note</label>
+                                        <textarea class="form-control" name="note" id="exampleFormControlTextarea1"
+                                                  placeholder="Type Your Note Here"
+                                                  rows="3" required></textarea>
+                                    </div>
+
+                                    <div class="modal-footer">
+                                        <button type="submit" class="btn btn-success">Add Note</button>
+                                        <button type="reset" class="reset-btn btn btn-danger">Reset</button>
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </ul>
+
+            {% if not request.user.is_anonymous %}
+            <!-- Start - 'backslash2' Block To Add A '\' On Other Pages. So It Would Match To The URL Patterns   -->
+
+            <form class="d-flex" action="{% block backslash2 %}{% endblock %}search/" method="post">
+                {% csrf_token %}
+                <input class="form-control me-2" name="searched" type="search" placeholder="Search in all notes" aria-label="Search">
+                <button class="btn btn-outline-success" type="submit">Search</button>
+            </form>
+            <!-- End - 'backslash2' Block To Add A '\' On Other Pages. So It Would Match To The URL Patterns   -->
+            {% endif %}
+            <!-- Start - Check That A User Is Already Logged In?   -->
+            {% autoescape off %}
+            {% if request.user.is_authenticated %}
+                <ul class="navbar-nav mx-md-4">
+                    <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" title="Welcome {{ request.user }} To AashuNotes" href="#" id="navbarDarkDropdownMenuLink" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        Welcome - {{ request.user|slice:":10" }}
+                    </a>
+                    
+                        <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="navbarDarkDropdownMenuLink">
+                            <li><a href="{{ anchor }}/" id="log-btn" class="dropdown-item" href="#" {% if target_toggle %}data-bs-toggle="modal" data-bs-target="#myModal2"{% endif %}><i class="fa fa-sign-out-alt me-2"></i>Logout</a></li>
+                            <li><a class="dropdown-item" onclick="sure_delete_account()" style="cursor: pointer;"><i class="fa fa-trash-alt me-2"></i>Delete Account</a></li>
+                            <li><a class="dropdown-item" href="{% if card_backslash %}\{% endif %}change_password_page/"><i class="fa fa-key me-2"></i>Change password</a></li>
+                        </ul>
+                    
+                    </li>
+                </ul>
+            {% else %}
+                <!-- Login Button -->
+                <a href="{{ anchor }}/" id="log-btn" class="btn btn-danger mx-lg-2 mt-lg-0 mx-md-0 mt-sm-3 mt-3" {% if target_toggle %}data-bs-toggle="modal" data-bs-target="#myModal2"{% endif %}>{{ btn_text }}</a>
+
+                <!-- Create Account Button -->
+                <a href="create_account/" role="button" class="btn btn-danger text-light">Create Account</a>
+            {% endif %}
+            {% endautoescape %}
+            <!-- End - Check That A User Is Already Logged In?   -->
+
+
+            <!-- Modal -->
+            <div class="modal fade" id="myModal2" tabindex="-1" aria-labelledby="myModalLabel2"
+                 aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <!-- Start Of Modal Header -->
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="myModalLabel2">Login To Aashu Notes</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                    aria-label="Close"></button>
+                        </div>
+                        <!-- End Of Modal Header -->
+
+
+                        <!-- Modal Body -->
+                        <div class="modal-body">
+                            <form action="login_aashunotes/" method="post">
+                                {% csrf_token %}
+                                <div class="mb-3">
+                                    <label for="exampleFormControlInput2" class="form-label">Username</label>
+                                    <input type="text" class="form-control" name="username"
+                                           id="exampleFormControlInput2" placeholder="Enter Your Username" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="exampleFormControlTextarea2" class="form-label">Password</label>
+                                    <input type="password" class="form-control" id="exampleFormControlTextarea2"
+                                           name="password" placeholder="Enter Your Password">
+                                </div>
+
+                                <div class="modal-footer d-flex justify-content-end">
+                                    <a href="create_account/" role="button" class="me-auto btn btn-danger text-light">Create Account</a>
+
+                                    <button type="submit" class="btn btn-success">Login</button>
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close
+                                    </button>
+
+                                </div>
+                            </form>
+                        </div>
+                        <!-- End Of Modal Body -->
+
+
+                    </div>
+                </div>
+            </div>
+            <!-- End Of Modal -->
+
+
+        </div>
+    </div>
+</nav>
+<!-- End - Code For Navbar   -->
+
+
+{% block body %}
+{% endblock %}
+
+
+<!-- Optional JavaScript; choose one of the two! -->
+
+<!-- Option 1: Bootstrap Bundle with Popper -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-ygbV9kiqUc6oa4msXn9868pTtWMgiQaeYH7/t7LECLbyPA2x65Kgf80OJFdroafW"
+        crossorigin="anonymous"></script>
+
+<!-- Option 2: Separate Popper and Bootstrap JS -->
+<!--
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js" integrity="sha384-q2kxQ16AaE6UbzuKqyBE9/u/KzioAlnx2maXQHiDX9d4/zp8Ok3f+M7DPm+Ib6IU" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/js/bootstrap.min.js" integrity="sha384-pQQkAEnwaBkjpqZ8RU1fF1AKtTcHJwFl3pblpTlHXybJjHpMYo79HY3hIi4NKxyj" crossorigin="anonymous"></script>
+-->
+<script src="https://code.jquery.com/jquery-3.5.1.js" integrity="sha256-QWo7LDvxbWT2tbbQ97B53yJnYU3WhH/C8ycbRAkjPDc="
+        crossorigin="anonymous"></script>
+        
+<script src="{% static 'myapp/js/base.js' %}"></script>
+
+{% block js %}
+{% endblock %}
+
+
+<script>
+
+
+var popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'))
+var popoverList = popoverTriggerList.map(function (popoverTriggerEl) {
+  return new bootstrap.Popover(popoverTriggerEl)
+})
+
+
+// Pop Over JS Code
+var myDefaultAllowList = bootstrap.Tooltip.Default.allowList
+
+myDefaultAllowList["button"] = ["type", "class", "data-bs-target", "data-bs-toggle", "onclick"]
+myDefaultAllowList["a"] = ['target', 'href', 'title', 'rel', "data-bs-target", "data-bs-toggle"]
+
+
+// You can push your custom regex to validate your attributes.
+// Be careful about your regular expressions being too lax
+var myCustomRegex = /^data-my-app-[\w-]+/
+myDefaultAllowList['*'].push(myCustomRegex)
+
+// $(".items-pop").attr('data-bs-content', '<a href="{% if card_backslash %}\{% endif %}delete/{{i.id}}" title="Delete This Note" class="btn btn-danger mx-1 delete_btn" role="button"><i class="fa fa-trash-alt"></i></a> <a href="{% if card_backslash %}\{% endif %}edit/{{i.id}}" title="Edit This Note" class="btn btn-primary" role="button"><i class="fa fa-edit"></i></a><div class="lock_div"><button type="button" class="btn btn-danger ms-2 l_button" data-bs-toggle="modal"><i class="fa fa-lock"></i></button></div>')
+
+
+$(".lock_div").attr("data-bs-target", "hello")
+
+items_by_class = document.getElementsByClassName("lock_modal").length;
+
+// for (i = 1; i < items_by_class + 1; i++){
+// }
+
+
+// Example starter JavaScript for disabling form submissions if there are invalid fields
+(function () {
+  'use strict'
+
+  // Fetch all the forms we want to apply custom Bootstrap validation styles to
+  var forms = document.querySelectorAll('.needs-validation')
+
+  // Loop over them and prevent submission
+  Array.prototype.slice.call(forms)
+    .forEach(function (form) {
+      form.addEventListener('submit', function (event) {
+        if (!form.checkValidity()) {
+          event.preventDefault()
+          event.stopPropagation()
+        }
+
+        form.classList.add('was-validated')
+      }, false)
+    })
+})()
+
+
+if ($(".popover").length > 0){
+    $(".popover").css("z-index", "0")
+    
+    
+} else {
+    $(".popover").css("z-index", "0")
+}
+
+$(".items-pop").click(() => {
+    if ($(".popover").length > 0){
+    $(".popover").css("z-index", "0")
+    
+    
+    } else {
+        $(".popover").css("z-index", "0")
+    }
+
+});
+
+
+function sure_delete(){
+    swal({
+        title: "Are you sure?",
+        text:"Are you sure that you wants to delete this note?",
+        icon:"warning",
+        dangerMode:true,
+        buttons:{
+            cancel:"Cancel",
+            confirm:"Delete!",
+        },
+            
+    }).then((value) => {
+        if (value){
+            let arr = document.getElementsByClassName("delete_btn_popover");
+            for (aashu=0; aashu<arr.length; aashu++){
+                window.open(`delete/${arr[aashu].id}`, "_parent")
+            }
+        }
+    })
+    
+}
+
+/*
+$(".items-pop").click(function(){
+    let arr = document.getElementsByClassName("delete_btn_popover");
+    for (aashu=0; aashu<arr.length; aashu++){
+        ;
+    }
+});
+*/
+
+function sure_delete_account(){
+    swal({
+        title:"Are you sure?",
+        text:"Are you sure that you wants to delete your account?",
+        dangerMode:true,
+        buttons: {
+            cancel:"Cancel",
+            confirm:"Yes, Delete my account!",
+        },
+        icon:"warning",
+    }).then((yesDelete) => {
+        if(yesDelete){
+            window.open("delete_account", "_parent")
+        }
+    });
+}
+
+
+{% comment %} function addLabel(){
+    document.getElementById("labelINP").value = this.innerHTML;
+} {% endcomment %}
+
+{% comment %} for (nums=0;nums<$(".labelBTN").length;nums++){
+    $(".labelBTN" + nums).click(function(){
+        alert("hello")
+    });
+
+} {% endcomment %}
+
+$(".labelBTN").click(function(){
+    $("#labelINP").attr("value", $(this).text())
+    $(this).attr("type", "submit");
+});
+/*
+const searchBox = document.getElementById("searchBox");
+
+searchBox.addEventListener("keyup", e => {
+    let note_titles = document.getElementsByClassName("card-title");
+    let notes = document.getElementsByClassName("card-text");
+
+    let searched = e.target.value;
+    let search = new RegExp(searched, "i");
+
+    Array.from(note_titles).forEach((element, index) => {
+        if (search.exec(element.innerHTML) != null || search.exec(notes[index].innerText) != null ){
+            element.parentElement.parentElement.style.display = "block";
+            let old_html = element.innerHTML;
+            let obj = {
+                    highlight:search.exec(element.innerHTML)[0],
+                    afterText:element.innerText.slice(search.exec(element.innerText).index + search.exec(element.innerText)[0].length, ),
+                    beforeText:element.innerText.slice(0,search.exec(element.innerText).index),
+                }
+
+            let highlighted = element.innerHTML.replace(search.exec(element.innerHTML)[0], `<span class="bg-warning text-light">${search.exec(element.innerHTML)[0]}</span>`);
+
+            document.getElementsByClassName("highlight")[index].innerHTML = obj.highlight;
+            document.getElementsByClassName("beforeText")[index].innerHTML = obj.beforeText;
+            document.getElementsByClassName("afterText")[index].innerHTML = obj.afterText;
+            
+        }
+        else{
+            element.parentElement.parentElement.style.display = "none";
+            element.innerHTML = searched;
+        }
+    });
+});
+*/
+</script>
+
+<!-- Messages -->
+{% for message in messages %}
+    <!-- If An Error messages occurs -->
+    {% if message.level == 40 %} 
+        <script>
+            swal("Error", "{{message}}", "error")
+        </script>
+
+    <!-- If a success message occurs -->
+    {% elif message.level == 25 %}
+        <script>
+            swal("Success", "{{message}}", "success")
+        </script>
+
+    {% elif message.level == 30 %}
+        <script>
+            swal("Warning", "{{message}}", "warning")
+        </script>
+    {% endif %}
+{% endfor %}
+
+
+
+</body>
+</html>
