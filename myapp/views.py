@@ -8,16 +8,48 @@ from django.db.models import Q
 from django.shortcuts import render, redirect, HttpResponse, HttpResponseRedirect
 from django.urls import reverse
 from urllib.parse import urlencode
-
+import cryptography
+from cryptography.fernet import Fernet
+import base64
+from myapp.secrets import SECRET_KEY,FERNET_KEY
 from .models import Note, Label
 
 import json
 
+def bytes_string_to_bytes(bytes_string):
+    """Convert bytes_string to bytes object"""
+    return bytes(bytes_string.split("'")[1], 'utf-8')
+
+def bytes_string_to_string(bytes_string):
+    """Convert bytes_string to bytes object"""
+    return str(bytes_string).split("'")[1]
+
+
+def encrypt(request, text):
+    key = bytes(SECRET_KEY[:6] + str(request.user.password)[:20] + SECRET_KEY[-7:-1], 'utf-8')
+    key = base64.urlsafe_b64encode(key)
+
+    return str(Fernet(key).encrypt(bytes(text,'utf-8')))
+
+def decrypt(request, encrypted_field):
+    key = bytes(SECRET_KEY[:6] + str(request.user.password)[:20] + SECRET_KEY[-7:-1], 'utf-8')
+    key = base64.urlsafe_b64encode(key)
+    print(encrypted_field)
+    decrypted = bytes_string_to_string(Fernet(key).decrypt(bytes_string_to_bytes(encrypted_field)))
+
+    return decrypted
+
+
 # Create your views here.
 def index(request):
     user = str(request.user)
-    note = Note.objects.all()
-    params = {"note": note, "user": user, "anchor": "logout_aashunotes", "btn_text": "<i class='fa fa-sign-out-alt me-2'></i>Log Out", "target_toggle": False}
+    notes = Note.objects.filter(author=user)
+
+    # Decrypt notes of the user
+    for note in notes:
+        note.note_title = decrypt(request, note.note_title)
+        note.note = decrypt(request, note.note)
+    params = {"note": notes, "user": user, "anchor": "logout_aashunotes", "btn_text": "<i class='fa fa-sign-out-alt me-2'></i>Log Out", "target_toggle": False}
 
 
     try:
@@ -45,6 +77,11 @@ def add_note(request):
         note_title = request.POST.get("note_title")
         note = request.POST.get("note")
         user = request.user
+
+        # Encrypt note details
+        encoding = 'utf-8'
+        note_title = encrypt(request, note_title)
+        note = encrypt(request, note)
 
         Note(note_title=note_title, note=note, add_date=datetime.datetime.today(), author=user).save()
 
