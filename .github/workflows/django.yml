@@ -26,6 +26,8 @@ jobs:
           script: |
             cd ${{ secrets.PROJECT_PATH }}
             git pull ${{secrets.REPO_URL}}
+            python3 manage.py makemigrations
+            python3 manage.py migrate
             sudo systemctl daemon-reload
             sudo systemctl restart gunicorn
             
