@@ -17,7 +17,7 @@ class Note(models.Model):
 
 class Label(models.Model):
     id = models.AutoField
-    note_titles = models.CharField(max_length=200, default=list, blank=True)
+    note_title = models.CharField(max_length=200, default=list, blank=True)
     note = models.CharField(max_length=500, default=list, blank=True)
     add_date = models.DateField(default="")
     author = models.CharField(max_length=200, default="")
