@@ -35,7 +35,7 @@ def index(request):
         params = {"note": Note.objects.all(), "user": user, "anonymous": True, "anchor": "login_aashunotes",
                   "btn_text": "<i class='fa fa-sign-in-alt me-2'></i>Log In", "target_toggle": True}
 
-    params["labels"] = Label.objects.all()
+    params["labels"] = Label.objects.filter(author=request.user.username)
 
     return render(request, "myapp/index.html", params)
 
