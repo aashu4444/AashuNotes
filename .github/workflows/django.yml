@@ -27,7 +27,8 @@ jobs:
             cd ${{ secrets.PROJECT_PATH }}
             source ../env/bin/activate
             pip3 install -r requirements.txt
-            git fetch && git diff origin/master HEAD --name-only | xargs git checkout origin/master --
+            git fetch && git diff origin/main HEAD --name-only | xargs git checkout origin/main --
+            git pull
             python3 manage.py makemigrations
             python3 manage.py migrate
             sudo systemctl daemon-reload
