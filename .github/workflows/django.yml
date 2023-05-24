@@ -25,8 +25,9 @@ jobs:
           port: ${{ secrets.DEPLOY_PORT }}
           script: |
             cd ${{ secrets.PROJECT_PATH }}
-            git pull ${{secrets.REPO_URL}}
             source ../env/bin/activate
+            pip3 install -r requirements.txt
+            git fetch && git diff origin/master HEAD --name-only | xargs git checkout origin/master --
             python3 manage.py makemigrations
             python3 manage.py migrate
             sudo systemctl daemon-reload
