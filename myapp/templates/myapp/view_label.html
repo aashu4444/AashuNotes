@@ -9,7 +9,7 @@
 {% block body %}
 <div class="container mt-5 d-flex justify-content-center" style="flex-wrap: wrap;">
     {% for title in loads %}
-        {% for i in note %}
+        {% for i in notes %}
             {% if i.note_title == title %}
                 {% include "myapp/card.html" with card_backslash=True %}
             {% endif %}
