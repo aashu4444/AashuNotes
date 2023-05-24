@@ -50,7 +50,7 @@
             </button>
 
 
-            <button data-bs-template='<div class="popover po" role="tooltip"><div class="popover-arrow"></div><h3 class="popover-header"></h3><div class="popover-body"></div></div>' type="button" data-bs-html="true" class="btn btn-danger items-pop" data-bs-toggle="popover" title="Note Editing Options" data-bs-content='<button title="Delete This Note" {% if i.password != "" %}data-bs-toggle="modal" data-bs-target="#exampleModalDelete{{forloop.counter}}" {% else %} onclick="sure_delete()" id="{{i.id}}" {% endif %}class="btn btn-danger mx-1 delete_btn_popover" role="button"><i class="fa fa-trash-alt"></i></button> <a {% if i.password == "" %}href="{% if card_backslash %}\{% endif %}edit/{{i.id}}"{% endif %} title="Edit This Note" class="btn btn-primary" {% if i.password != "" %}data-bs-toggle="modal" data-bs-target="#exampleModalEdit{{forloop.counter}}"{% endif %} role="button"><i class="fa fa-edit"></i></a><button type="button" class="btn btn-success ms-2" data-bs-toggle="modal" data-bs-target="#addLabelModal{{forloop.counter}}"><i class="fa fa-plus"></i></button><button type="button" class="btn btn-success ms-2" data-bs-toggle="modal" data-bs-target="#removeFromLabel{{forloop.counter}}"><i class="fa fa-minus"></i></button>'>....</button>
+            <button data-bs-template='<div class="popover po" role="tooltip"><div class="popover-arrow"></div><h3 class="popover-header"></h3><div class="popover-body"></div></div>' type="button" data-bs-html="true" class="btn btn-danger items-pop" data-bs-toggle="popover" title="Note Editing Options" data-bs-content='<button title="Delete This Note" {% if i.password != "" %}data-bs-toggle="modal" data-bs-target="#exampleModalDelete{{forloop.counter}}" {% else %} onclick="sure_delete()" id="{{i.id}}" {% endif %}class="btn btn-danger mx-1 delete_btn_popover" role="button"><i class="fa fa-trash-alt"></i></button> <a {% if i.password == "" %}href="/edit/{{i.id}}"{% endif %} title="Edit This Note" class="btn btn-primary" {% if i.password != "" %}data-bs-toggle="modal" data-bs-target="#exampleModalEdit{{forloop.counter}}"{% endif %} role="button"><i class="fa fa-edit"></i></a><button type="button" class="btn btn-success ms-2" data-bs-toggle="modal" data-bs-target="#addLabelModal{{forloop.counter}}"><i class="fa fa-plus"></i></button><button type="button" class="btn btn-success ms-2" data-bs-toggle="modal" data-bs-target="#removeFromLabel{{forloop.counter}}"><i class="fa fa-minus"></i></button>'>....</button>
 
             <button title="{% if i.password != '' %}Unlock This Note{% else %}Lock This Note{% endif %}" type="button" class="btn btn-danger ms-1 lock-btn" data-bs-toggle="modal"
                     data-bs-target="{% if i.password != '' %}#unlockModal{{forloop.counter}}{% else %}#lockModal{{forloop.counter}}{% endif %}">
@@ -279,9 +279,9 @@
                     {% if i.password == "" %}
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                        <a href="{% if card_backslash %}\{% endif %}delete/{{i.id}}" title="Delete This Note"
+                        <a href="/delete/{{i.id}}" title="Delete This Note"
                            class="btn btn-danger mx-1 delete_btn" role="button"><i class="fa fa-trash-alt"></i></a>
-                        <a href="{% if card_backslash %}\{% endif %}edit/{{i.id}}" title="Edit This Note"
+                        <a href="/edit/{{i.id}}" title="Edit This Note"
                            class="btn btn-primary" role="button"><i class="fa fa-edit"></i></a>
                         <button title="{% if i.password != '' %}Unlock This Note{% else %}Lock This Note{% endif %}" type="button" class="btn btn-danger ms-1 lock-btn" data-bs-toggle="modal"
                             data-bs-target="{% if i.password != '' %}#unlockModal{{forloop.counter}}{% else %}#lockModal{{forloop.counter}}{% endif %}">
