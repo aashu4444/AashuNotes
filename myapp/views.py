@@ -13,16 +13,10 @@ from cryptography.fernet import Fernet
 import base64
 from myapp.secrets import SECRET_KEY,FERNET_KEY
 from .models import Note, Label
+from myapp.utils import decrypt
 
 import json
 
-def bytes_string_to_bytes(bytes_string):
-    """Convert bytes_string to bytes object"""
-    return bytes(bytes_string.split("'")[1], 'utf-8')
-
-def bytes_string_to_string(bytes_string):
-    """Convert bytes_string to bytes object"""
-    return str(bytes_string).split("'")[1]
 
 
 def encrypt(request, text):
@@ -31,13 +25,6 @@ def encrypt(request, text):
 
     return str(Fernet(key).encrypt(bytes(text,'utf-8')))
 
-def decrypt(request, encrypted_field):
-    key = bytes(SECRET_KEY[:6] + str(request.user.password)[:20] + SECRET_KEY[-7:-1], 'utf-8')
-    key = base64.urlsafe_b64encode(key)
-    print(encrypted_field)
-    decrypted = bytes_string_to_string(Fernet(key).decrypt(bytes_string_to_bytes(encrypted_field)))
-
-    return decrypted
 
 
 # Create your views here.
@@ -441,12 +428,26 @@ def remove_from_label(request, remove_me_from_label):
 def view_label(request, label_id):
     params = {}
     label = Label.objects.get(id=label_id)
-    note = Note.objects.all()
-    params["note"] = note
+    notes = list(
+        map(
+            lambda note: note.decrypt(request), 
+            Note.objects.all()
+        )
+    )
+
+    params["notes"] = notes
+
     params["labels"] = Label.objects.all()
     try:
-        params["loads"] = json.loads(label.note_title)
+        params["loads"] = list(
+            map(
+                lambda encrypted_note_title: decrypt(request, encrypted_note_title),
+                json.loads(label.note_title)
+            )
+        )
+        print(param['loads'])
     except Exception as error:
         pass
+    print(params['notes'])
 
     return render(request, "myapp/view_label.html", params)
