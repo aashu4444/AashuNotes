@@ -306,7 +306,7 @@ function sure_delete(){
         if (value){
             let arr = document.getElementsByClassName("delete_btn_popover");
             for (aashu=0; aashu<arr.length; aashu++){
-                window.open(`delete/${arr[aashu].id}`, "_parent")
+                window.open(`/delete/${arr[aashu].id}`, "_parent")
             }
         }
     })
