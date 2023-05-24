@@ -1,4 +1,5 @@
 from django.db import models
+from myapp import utils
 
 # Create your models here.
 class Note(models.Model):
@@ -11,9 +12,18 @@ class Note(models.Model):
     note_title_when_locked = models.CharField(max_length=500, default="", blank=True)
     note_when_locked = models.CharField(max_length=500, default="", blank=True)
 
+    
+    def decrypt(self, request):
+        self.note_title = utils.decrypt(request, self.note_title)
+        self.note = utils.decrypt(request, self.note)
+
+        return self
+
 
     def __str__(self):
         return self.note_title
+
+    
 
 class Label(models.Model):
     id = models.AutoField
