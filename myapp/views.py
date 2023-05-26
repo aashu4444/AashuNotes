@@ -30,7 +30,7 @@ def encrypt(request, text):
 # Create your views here.
 def index(request):
     user = str(request.user)
-    notes = Note.objects.filter(author=user)
+    notes = Note.objects.filter(author=user).order_by('-timestamp')
 
     # Decrypt notes of the user
     for note in notes:
@@ -70,7 +70,7 @@ def add_note(request):
         note_title = encrypt(request, note_title)
         note = encrypt(request, note)
 
-        Note(note_title=note_title, note=note, add_date=datetime.datetime.today(), author=user).save()
+        Note(note_title=note_title, note=note, author=user).save()
 
         # return render(request, index(request))
         messages.success(request, 'Your Note Has Been Added.')
