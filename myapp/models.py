@@ -1,12 +1,13 @@
 from django.db import models
 from myapp import utils
 
+
 # Create your models here.
 class Note(models.Model):
     id = models.AutoField
     note_title = models.CharField(max_length=200, default="")
     note = models.CharField(max_length=500, default="")
-    add_date = models.DateField(default="")
+    timestamp = models.DateTimeField(auto_now_add=True)
     author = models.CharField(max_length=200, default="")
     password = models.CharField(max_length=200, default="", blank=True)
     note_title_when_locked = models.CharField(max_length=500, default="", blank=True)
