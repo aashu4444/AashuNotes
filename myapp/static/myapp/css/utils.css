@@ -5,6 +5,21 @@
 
 @media only screen and (max-width: 768px){
     .ml-sm-0{
-        margin-left: 0 !important !important !important;
+        margin-left: 0 !important;
     }
+}
+
+
+
+/* Theming for sweet alerts.  */
+.swal-modal{
+    background-color: var(--bs-light-bg-subtle);
+}
+
+.swal-text, .swal-title{
+    color: var(--bs-dark-text-emphasis);
+}
+
+.swal-icon::before, .swal-icon::after, .swal-icon--success__hide-corners {
+    background: var(--bs-light-bg-subtle);
 }
