@@ -232,7 +232,7 @@
         <div class="modal fade" id="exampleModal{{forloop.counter}}" tabindex="-1"
              aria-labelledby="exampleModalLabel{{forloop.counter}}"
              aria-hidden="true">
-            <div class="modal-dialog">
+            <div class="modal-dialog  modal-dialog-scrollable">
                 <div class="modal-content">
                     <div class="modal-header">
                         {% autoescape off %}
@@ -247,6 +247,8 @@
                                 {% endif %}
 
                             {% else %}
+
+                            {% comment %} If the current note is Locked {% endcomment %}
                                 {% if i.password != "" %}
                                     <h5 class="modal-title" id="exampleModalLabel{{forloop.counter}}">Locked Note</h5>
                                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
