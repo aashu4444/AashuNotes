@@ -1,8 +1,9 @@
 import datetime
-
+from django.contrib.auth.hashers import make_password, check_password
 from django.contrib import messages
 from django.contrib.auth import authenticate, login
 from django.contrib.auth import logout
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.db.models import Q
 from django.shortcuts import render, redirect, HttpResponse, HttpResponseRedirect
@@ -121,8 +122,12 @@ def delete(request, myid):
 
 
 def edit(request, note_id):
-    object = Note.objects.filter(id=note_id)
-    params = {"id": object[0].id, "NOTE_TITLE": object[0].note_title, "NOTE": object[0].note}
+    note = Note.objects.get(id=note_id, author=request.user)
+    
+    # Decrypt the note details before rendering it
+    note.decrypt(request)
+
+    params = {"id": note.id, "NOTE_TITLE": note.note_title, "NOTE": note.note}
 
     try:
         ENTERED_PASSWORD = request.POST["entered_password"]
@@ -137,7 +142,7 @@ def edit(request, note_id):
 
     return render(request, "myapp/edit.html", params)
 
-
+@login_required
 def confirm_edit(request, confirm_note_id):
     try:
         ENTERED_PASSWORD = request.POST["entered_password"]
@@ -148,6 +153,8 @@ def confirm_edit(request, confirm_note_id):
 
             OBJ.note_title = title_of_note
             OBJ.note = note_of_note
+
+            OBJ.encrypt(request)
             OBJ.save()
 
             messages.success(request, "Your Note Has Been Edited Successfully.")
@@ -168,7 +175,11 @@ def confirm_edit(request, confirm_note_id):
 
         OBJ.note_title = title_of_note
         OBJ.note = note_of_note
+
+        OBJ.encrypt(request)
         OBJ.save()
+        
+        messages.success(request, "Your Note Has Been Edited Successfully.")
 
         return redirect("/")
 
@@ -219,7 +230,7 @@ def lock_me_bro(request, id_of_note):
         note_title_when_locked = request.POST["note_title_when_locked"]
         note_when_locked = request.POST["note_when_locked"]
 
-        note.password = lock_password
+        note.password = make_password(lock_password)
         note.note_title_when_locked = note_title_when_locked
         note.note_when_locked = note_when_locked
         note.save()
@@ -233,8 +244,9 @@ def view_locked_note(request, id_of_locked_note):
     if request.method == "POST":
         entered_password = request.POST["entered_password"]
 
-        if entered_password == locked_note_obj.password:
+        if check_password(entered_password, locked_note_obj.password):
             params["right_password"] = True
+            locked_note_obj.decrypt(request)
             return render(request, "myapp/view_locked_note.html", params)
         else:
             params["right_password"] = False
@@ -247,7 +259,7 @@ def unlock(request, unlock_note_id):
     if request.method == "POST":
         entered_password = request.POST["entered_password"]
 
-        if entered_password == note.password:
+        if check_password(entered_password, note.password):
             note.password = ""
             note.note_title_when_locked = ""
             note.note_when_locked = ""
