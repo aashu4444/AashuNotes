@@ -1,0 +1,7 @@
+.modal  pre{
+    white-space: pre-wrap !important;
+}
+
+nav.navbar{
+    background-color: var(--bs-light-bg-subtle)
+}
