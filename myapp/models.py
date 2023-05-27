@@ -19,6 +19,12 @@ class Note(models.Model):
         self.note = utils.decrypt(request, self.note)
 
         return self
+    
+    def encrypt(self, request):
+        self.note_title = utils.encrypt(request, self.note_title)
+        self.note = utils.encrypt(request, self.note)
+
+        return self
 
 
     def __str__(self):
