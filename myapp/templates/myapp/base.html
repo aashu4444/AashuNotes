@@ -18,6 +18,7 @@
           integrity="sha512-+4zCK9k+qNFUR5X+cKL9EIR+ZOhtIloNl9GIKS57V1MyNsYpYcUrUeQc9vNfzsWfV28IaLL3i96P9sdNyeRssA=="
           crossorigin="anonymous"/>
     <link rel="stylesheet" type="text/css" href="{% static 'myapp/css/utils.css' %}"/>
+    <link rel="stylesheet" type="text/css" href="{% static 'myapp/css/globals.css' %}"/>
     <title>{% block title %}{% endblock %} - AashuNotes</title>
 
 
@@ -33,7 +34,7 @@
 
 
 <!-- Start - Code For Navbar   -->
-<nav class="navbar navbar-expand-lg ">
+<nav class="navbar sticky-top navbar-expand-lg ">
     <div class="container-fluid">
         <a class="navbar-brand" href="/">AashuNotes</a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
@@ -356,8 +357,13 @@ class Watcher {
 
 // Initialize site mode according to the user's device
 const isDark = window.matchMedia("(prefers-color-scheme: dark)");
-if (isDark){
+const localStorage__isDark = localStorage.getItem('dark');
+if ((isDark && localStorage__isDark === undefined) || localStorage__isDark === '1'){
     toggleMode('dark');
+}
+
+else{
+    toggleMode('light');
 }
 
 // Function to toggle the site mode
@@ -367,14 +373,17 @@ function toggleMode(mode){
     if (checked || mode === "dark"){
         $('html').attr("data-bs-theme", "dark");
         $('#changeModeSwitch').prop("checked", true);
-
-        // Customise Alerts (Sweet Alert)
-        // $('.swal-modal').css("background-color", "var(--bs-dark)");
+        
+        // Save user preference in localStorage
+        localStorage.setItem('dark', 1)
     }
 
     else{
         $('html').attr("data-bs-theme", "light")
         $('#changeModeSwitch').prop("checked", false) 
+
+        // Save user preference in localStorage
+        localStorage.setItem('dark', 0)
     };
 }
 
