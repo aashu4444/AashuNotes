@@ -6,7 +6,6 @@
 {% block body %}
 
 <h3>{{title}}</h3>
-<h3>{{tote}}</h3>
 
 
 <div class="container mx-10 mt-5">
@@ -22,6 +21,8 @@
             <input type="password" class="form-control" placeholder="Enter Your Password" name="create_password"
                    id="new_password">
         </div>
+
+        <p>Already have an account? <a href="#myModal2" data-bs-target="#myModal2" data-bs-toggle="modal">Login</a></p>
         <button type="submit" class="btn btn-success">Create Account</button>
         <button type="reset" class="btn btn-danger">Reset</button>
     </form>
