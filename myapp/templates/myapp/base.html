@@ -69,43 +69,7 @@
                 {% endif %}
                 
 
-                <!-- Modal -->
-                <div class="modal fade" id="myModal1" tabindex="-1" aria-labelledby="myModalLabel1"
-                     aria-hidden="true">
-                    <div class="modal-dialog">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h5 class="modal-title" id="myModalLabel1">Add A Note</h5>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                        aria-label="Close"></button>
-                            </div>
-                            <div class="modal-body">
-                                <form action="\add_note/" method="post">
-                                    {% csrf_token %}
-                                    <div class="mb-3">
-                                        <label for="exampleFormControlInput1" class="form-label">Note Title</label>
-                                        <input type="text" class="form-control note-title" name="note_title"
-                                               id="exampleFormControlInput1" placeholder="Enter Note Title" required>
-                                    </div>
-                                    <div class="mb-3">
-                                        <label for="exampleFormControlTextarea1" class="form-label">Note</label>
-                                        <textarea class="form-control" name="note" id="exampleFormControlTextarea1"
-                                                  placeholder="Type Your Note Here"
-                                                  rows="3" required></textarea>
-                                    </div>
-
-                                    <div class="modal-footer">
-                                        <button type="submit" class="btn btn-success">Add Note</button>
-                                        <button type="reset" class="reset-btn btn btn-danger">Reset</button>
-                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close
-                                        </button>
-                                    </div>
-                                </form>
-                            </div>
-
-                        </div>
-                    </div>
-                </div>
+                
             </ul>
 
             {% if not request.user.is_anonymous %}
@@ -121,7 +85,7 @@
             <!-- Start - Check That A User Is Already Logged In?   -->
             {% autoescape off %}
             {% if request.user.is_authenticated %}
-                <ul class="navbar-nav mx-md-4">
+                <ul class="navbar-nav mx-md-4 mx-0">
                     <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" title="Welcome {{ request.user }} To AashuNotes" href="#" id="navbarDarkDropdownMenuLink" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                         Welcome - {{ request.user|slice:":10" }}
@@ -137,10 +101,10 @@
                 </ul>
             {% else %}
                 <!-- Login Button -->
-                <a href="{{ anchor }}/" id="log-btn" class="btn btn-danger mx-lg-2 mt-lg-0 mx-md-0 mt-sm-3 mt-3" {% if target_toggle %}data-bs-toggle="modal" data-bs-target="#myModal2"{% endif %}>{{ btn_text }}</a>
+                <a href="{{ anchor }}/" id="log-btn" class="btn btn-danger mx-lg-2 mt-lg-0 mx-md-0 mt-0 mt-md-3" data-bs-toggle="modal" data-bs-target="#myModal2">Login</a>
 
                 <!-- Create Account Button -->
-                <a href="create_account/" role="button" class="btn btn-danger text-light">Create Account</a>
+                <a href="create_account/" role="button" class="btn btn-danger text-light me-3">Create Account</a>
             {% endif %}
             {% endautoescape %}
 
@@ -151,52 +115,7 @@
             <!-- End - Check That A User Is Already Logged In?   -->
 
 
-            <!-- Modal -->
-            <div class="modal fade" id="myModal2" tabindex="-1" aria-labelledby="myModalLabel2"
-                 aria-hidden="true">
-                <div class="modal-dialog">
-                    <div class="modal-content">
-                        <!-- Start Of Modal Header -->
-                        <div class="modal-header">
-                            <h5 class="modal-title" id="myModalLabel2">Login To Aashu Notes</h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                    aria-label="Close"></button>
-                        </div>
-                        <!-- End Of Modal Header -->
-
-
-                        <!-- Modal Body -->
-                        <div class="modal-body">
-                            <form action="login_aashunotes/" method="post">
-                                {% csrf_token %}
-                                <div class="mb-3">
-                                    <label for="exampleFormControlInput2" class="form-label">Username</label>
-                                    <input type="text" class="form-control" name="username"
-                                           id="exampleFormControlInput2" placeholder="Enter Your Username" required>
-                                </div>
-                                <div class="mb-3">
-                                    <label for="exampleFormControlTextarea2" class="form-label">Password</label>
-                                    <input type="password" class="form-control" id="exampleFormControlTextarea2"
-                                           name="password" placeholder="Enter Your Password">
-                                </div>
-
-                                <div class="modal-footer d-flex justify-content-end">
-                                    <a href="create_account/" role="button" class="me-auto btn btn-danger text-light">Create Account</a>
-
-                                    <button type="submit" class="btn btn-success">Login</button>
-                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close
-                                    </button>
-
-                                </div>
-                            </form>
-                        </div>
-                        <!-- End Of Modal Body -->
-
-
-                    </div>
-                </div>
-            </div>
-            <!-- End Of Modal -->
+            
 
 
         </div>
@@ -204,6 +123,93 @@
 </nav>
 <!-- End - Code For Navbar   -->
 
+
+{% comment %} Modals {% endcomment %}
+
+<!-- Add note Modal -->
+<div class="modal fade" id="myModal1" tabindex="-1" aria-labelledby="myModalLabel1"
+aria-hidden="true">
+    <div class="modal-dialog">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h5 class="modal-title" id="myModalLabel1">Add A Note</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal"
+                    aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+            <form action="\add_note/" method="post">
+                {% csrf_token %}
+                <div class="mb-3">
+                    <label for="exampleFormControlInput1" class="form-label">Note Title</label>
+                    <input type="text" class="form-control note-title" name="note_title"
+                            id="exampleFormControlInput1" placeholder="Enter Note Title" required>
+                </div>
+                <div class="mb-3">
+                    <label for="exampleFormControlTextarea1" class="form-label">Note</label>
+                    <textarea class="form-control" name="note" id="exampleFormControlTextarea1"
+                                placeholder="Type Your Note Here"
+                                rows="3" required></textarea>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-success">Add Note</button>
+                    <button type="reset" class="reset-btn btn btn-danger">Reset</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close
+                    </button>
+                </div>
+            </form>
+        </div>
+
+    </div>
+    </div>
+</div>
+
+<!-- Login Modal -->
+<div class="modal fade" id="myModal2" tabindex="-1" aria-labelledby="myModalLabel2"
+aria-hidden="true">
+<div class="modal-dialog">
+   <div class="modal-content">
+       <!-- Start Of Modal Header -->
+       <div class="modal-header">
+           <h5 class="modal-title" id="myModalLabel2">Login To Aashu Notes</h5>
+           <button type="button" class="btn-close" data-bs-dismiss="modal"
+                   aria-label="Close"></button>
+       </div>
+       <!-- End Of Modal Header -->
+
+
+       <!-- Modal Body -->
+       <div class="modal-body">
+           <form action="/login_aashunotes/" method="post">
+               {% csrf_token %}
+               <div class="mb-3">
+                   <label for="exampleFormControlInput2" class="form-label">Username</label>
+                   <input type="text" class="form-control" name="username"
+                          id="exampleFormControlInput2" placeholder="Enter Your Username" required>
+               </div>
+               <div class="mb-3">
+                   <label for="exampleFormControlTextarea2" class="form-label">Password</label>
+                   <input type="password" class="form-control" id="exampleFormControlTextarea2"
+                          name="password" placeholder="Enter Your Password">
+               </div>
+
+               <div class="modal-footer d-flex justify-content-end">
+                   <a href="create_account/" role="button" class="me-auto btn btn-danger text-light">Create Account</a>
+
+                   <button type="submit" class="btn btn-success">Login</button>
+                   <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close
+                   </button>
+
+               </div>
+           </form>
+       </div>
+       <!-- End Of Modal Body -->
+
+
+   </div>
+</div>
+</div>
+<!-- End Of Modal -->
 
 {% block body %}
 {% endblock %}
